@@ -73,9 +73,9 @@ def make_model():
 def make_optimizer():
     global optimizer
     if args.optimizer == 'Adam':
-        optimizer = torch.optim.Adam(model.parameters(), args.learning_rate, betas=(args.momentum, 0.999))
+        optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), args.learning_rate, betas=(args.momentum, 0.999))
     elif args.optimizer == 'SGD':
-        optimizer = torch.optim.SGD(model.parameters(), args.learning_rate, momentum=args.momentum)
+        optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), args.learning_rate, momentum=args.momentum)
     else:
         assert False, 'Unknown optimizer {}'.format(args.optimizer)
 
@@ -88,6 +88,12 @@ def train():
             if not args.nogpu: batch_indices = batch_indices.cuda()
             input = Variable(tensor_tr[batch_indices])
             recon, loss = model(input, compute_loss=True)
+
+            parameters = model.parameters()
+            #for p_i, p in enumerate(parameters):
+            #    if p_i == 6 or p_i == 7:
+            #        print(p_i, p)
+
             # optimize
             optimizer.zero_grad()       # clear previous gradients
             loss.backward()             # backprop
@@ -99,7 +105,7 @@ def train():
 
 associations = {
     'jesus': ['prophet', 'jesus', 'matthew', 'christ', 'worship', 'church'],
-    'comp ': ['floppy', 'windows', 'microsoft', 'monitor', 'workstation', 'macintosh', 
+    'comp ': ['floppy', 'windows', 'microsoft', 'monitor', 'workstation', 'macintosh',
               'printer', 'programmer', 'colormap', 'scsi', 'jpeg', 'compression'],
     'car  ': ['wheel', 'tire'],
     'polit': ['amendment', 'libert', 'regulation', 'president'],
@@ -121,8 +127,8 @@ def identify_topic_in_line(line):
 def print_top_words(beta, feature_names, n_top_words=10):
     print '---------------Printing the Topics------------------'
     for i in range(len(beta)):
-        line = " ".join([feature_names[j] 
-                            for j in beta[i].argsort()[:-n_top_words - 1:-1]])
+        line = " ".join([feature_names[j]
+                         for j in beta[i].argsort()[:-n_top_words - 1:-1]])
         topics = identify_topic_in_line(line)
         print('|'.join(topics))
         print('     {}'.format(line))
