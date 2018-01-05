@@ -18,14 +18,14 @@ class ProdLDA(nn.Module):
         self.en2_fc     = nn.Linear(ac.en1_units, ac.en2_units)             # 100  -> 100
         self.en2_drop   = nn.Dropout(0.2)
         self.mean_fc    = nn.Linear(ac.en2_units, ac.num_topic)             # 100  -> 50
-        self.mean_bn    = batchnorm_custom.BatchNorm1d(ac.num_topic, use_scale=False)                      # bn for mean
+        self.mean_bn    = batchnorm_custom.BatchNorm1d(ac.num_topic)   # bn for mean
         self.logvar_fc  = nn.Linear(ac.en2_units, ac.num_topic)             # 100  -> 50
-        self.logvar_bn  = batchnorm_custom.BatchNorm1d(ac.num_topic, use_scale=False)                      # bn for logvar
+        self.logvar_bn  = batchnorm_custom.BatchNorm1d(ac.num_topic)   # bn for logvar
         # z
         self.p_drop     = nn.Dropout(0.2)
         # decoder
         self.decoder    = nn.Linear(ac.num_topic, ac.num_input)             # 50   -> 1995
-        self.decoder_bn = batchnorm_custom.BatchNorm1d(ac.num_input, use_scale=False)                      # bn for decoder
+        self.decoder_bn = batchnorm_custom.BatchNorm1d(ac.num_input)   # bn for decoder
         # prior mean and variance as constant buffers
         prior_mean   = torch.Tensor(1, ac.num_topic).fill_(0)
         prior_var    = torch.Tensor(1, ac.num_topic).fill_(ac.variance)
