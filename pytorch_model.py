@@ -52,9 +52,9 @@ class ProdLDA(nn.Module):
         en2 = F.softplus(self.en2_fc(en1))                              # encoder2 output
         en2 = self.en2_drop(en2)
         #posterior_mean   = self.mean_bn  (self.mean_fc  (en2))          # posterior mean
-        posterior_mean   = self.mean(self.mean_fc  (en2))          # posterior mean
+        posterior_mean   = self.mean_fc(self.mean_fc  (en2))          # posterior mean
         #posterior_logvar = self.logvar_bn(self.logvar_fc(en2))          # posterior log variance
-        posterior_logvar = self.logvar(self.logvar_fc(en2))          # posterior log variance
+        posterior_logvar = self.logvar_fc(self.logvar_fc(en2))          # posterior log variance
         posterior_var    = posterior_logvar.exp()
         # take sample
         eps = Variable(input.data.new().resize_as_(posterior_mean.data).normal_()) # noise
@@ -63,7 +63,7 @@ class ProdLDA(nn.Module):
         p = self.p_drop(p)
         # do reconstruction
         #recon = F.softmax(self.decoder_bn(self.decoder(p)), dim=0)             # reconstructed distribution over vocabulary
-        recon = F.softmax(self.decoder(self.decoder(p)), dim=0)             # reconstructed distribution over vocabulary
+        recon = F.softmax(self.decoder_fc(self.decoder(p)), dim=0)             # reconstructed distribution over vocabulary
 
         if compute_loss:
             return recon, self.loss(input, recon, posterior_mean, posterior_logvar, posterior_var, avg_loss)
