@@ -18,17 +18,17 @@ class ProdLDA(nn.Module):
         self.en2_fc     = nn.Linear(ac.en1_units, ac.en2_units)             # 100  -> 100
         self.en2_drop   = nn.Dropout(0.2)
         self.mean_fc    = nn.Linear(ac.en2_units, ac.num_topic)             # 100  -> 50
-        #self.mean_bn    = batchnorm_custom.BatchNorm1d(ac.num_topic, use_scale=False)   # bn for mean
-        self.mean_bn    = nn.BatchNorm1d(ac.num_topic)   # bn for mean
+        self.mean_bn    = batchnorm_custom.BatchNorm1d(ac.num_topic, use_scale=False)   # bn for mean
+        #self.mean_bn    = nn.BatchNorm1d(ac.num_topic)   # bn for mean
         self.logvar_fc  = nn.Linear(ac.en2_units, ac.num_topic)             # 100  -> 50
-        #self.logvar_bn  = batchnorm_custom.BatchNorm1d(ac.num_topic, use_scale=False)   # bn for logvar
-        self.logvar_bn  = nn.BatchNorm1d(ac.num_topic)   # bn for logvar
+        self.logvar_bn  = batchnorm_custom.BatchNorm1d(ac.num_topic, use_scale=False)   # bn for logvar
+        #self.logvar_bn  = nn.BatchNorm1d(ac.num_topic)   # bn for logvar
         # z
         self.p_drop     = nn.Dropout(0.2)
         # decoder
         self.decoder    = nn.Linear(ac.num_topic, ac.num_input)             # 50   -> 1995
-        #self.decoder_bn = batchnorm_custom.BatchNorm1d(ac.num_input, use_scale=False)   # bn for decoder
-        self.decoder_bn = nn.BatchNorm1d(ac.num_input)   # bn for decoder
+        self.decoder_bn = batchnorm_custom.BatchNorm1d(ac.num_input, use_scale=False)   # bn for decoder
+        #self.decoder_bn = nn.BatchNorm1d(ac.num_input)   # bn for decoder
         # prior mean and variance as constant buffers
         prior_mean   = torch.Tensor(1, ac.num_topic).fill_(0)
         prior_var    = torch.Tensor(1, ac.num_topic).fill_(ac.variance)
@@ -52,9 +52,7 @@ class ProdLDA(nn.Module):
         en2 = F.softplus(self.en2_fc(en1))                              # encoder2 output
         en2 = self.en2_drop(en2)
         posterior_mean   = self.mean_bn  (self.mean_fc  (en2))          # posterior mean
-        #posterior_mean   = self.mean_fc  (en2)          # posterior mean
         posterior_logvar = self.logvar_bn(self.logvar_fc(en2))          # posterior log variance
-        #posterior_logvar = self.logvar_fc(en2)          # posterior log variance
         posterior_var    = posterior_logvar.exp()
         # take sample
         eps = Variable(input.data.new().resize_as_(posterior_mean.data).normal_()) # noise
@@ -63,7 +61,6 @@ class ProdLDA(nn.Module):
         p = self.p_drop(p)
         # do reconstruction
         recon = F.softmax(self.decoder_bn(self.decoder(p)), dim=1)             # reconstructed distribution over vocabulary
-        #recon = F.softmax(self.decoder(p), dim=0)             # reconstructed distribution over vocabulary
 
         if compute_loss:
             return recon, self.loss(input, recon, posterior_mean, posterior_logvar, posterior_var, avg_loss)
