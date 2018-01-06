@@ -33,7 +33,8 @@ class _BatchNorm(Module):
         self.running_var.fill_(1)
         #if self.affine:
         if self.use_scale or self.use_bias:
-            self.weight.data.ones_()
+            #self.weight.data.uniform_()
+            self.weight.data.fill_(1)
             self.bias.data.zero_()
 
     def forward(self, input):
