@@ -62,8 +62,8 @@ class VAE(object):
         en2_do = slim.layers.dropout(en2, self.keep_prob, scope='en2_dropped')
         self.posterior_mean   = slim.layers.linear(en2_do, self.network_architecture['n_z'], scope='FC_mean')
         self.posterior_logvar = slim.layers.linear(en2_do, self.network_architecture['n_z'], scope='FC_logvar')
-        self.posterior_mean   = slim.layers.batch_norm(self.posterior_mean, scope='BN_mean', scale=True)
-        self.posterior_logvar = slim.layers.batch_norm(self.posterior_logvar, scope='BN_logvar', scale=True)
+        self.posterior_mean   = slim.layers.batch_norm(self.posterior_mean, scope='BN_mean')
+        self.posterior_logvar = slim.layers.batch_norm(self.posterior_logvar, scope='BN_logvar')
 
         with tf.name_scope('z_scope'):
             eps = tf.random_normal((self.batch_size, n_z), 0, 1,                            # take noise
@@ -76,7 +76,7 @@ class VAE(object):
         p_do = slim.layers.dropout(p, self.keep_prob, scope='p_dropped')               # dropout(softmax(z))
         decoded = slim.layers.linear(p_do, n_hidden_gener_1, scope='FC_decoder')
 
-        self.x_reconstr_mean = tf.nn.softmax(slim.layers.batch_norm(decoded, scope='BN_decoder', scale=True))                    # softmax(bn(50->1995))
+        self.x_reconstr_mean = tf.nn.softmax(slim.layers.batch_norm(decoded, scope='BN_decoder'))                    # softmax(bn(50->1995))
 
         print self.x_reconstr_mean
 
