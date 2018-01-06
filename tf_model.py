@@ -104,7 +104,7 @@ class VAE(object):
             #decoder_weight = self.decoder_weight
         #else:
         decoder_weight = [v for v in tf.global_variables() if v.name=='FC_decoder/weights:0'][0]
-        opt, cost,emb = self.sess.run((self.optimizer, self.cost, decoder_weight),feed_dict={self.x: X,self.keep_prob: .8})
+        opt, cost,emb = self.sess.run((self.optimizer, self.cost, decoder_weight),feed_dict={self.x: X, self.keep_prob: .8})
         return cost,emb
 
     def test(self, X):
@@ -112,6 +112,7 @@ class VAE(object):
         """
         cost = self.sess.run((self.cost),feed_dict={self.x: np.expand_dims(X, axis=0),self.keep_prob: 1.0})
         return cost
+
     def topic_prop(self, X):
         """heta_ is the topic proportion vector. Apply softmax transformation to it before use.
         """
