@@ -19,7 +19,7 @@ class _BatchNorm(Module):
         if self.use_scale:
             self.weight = Parameter(torch.Tensor(num_features))
         else:
-            self.weight = Parameter(torch.ones(num_features), requires_grad=False)
+            self.weight = Parameter(torch.Tensor(num_features), requires_grad=False)
         if self.use_bias:
             self.bias = Parameter(torch.Tensor(num_features))
         else:
@@ -30,11 +30,13 @@ class _BatchNorm(Module):
 
     def reset_parameters(self):
         self.running_mean.zero_()
-        self.running_var.zero_()
+        self.running_var.fill_(1)
         #if self.affine:
-        if self.use_scale or self.use_bias:
-            #self.weight.data.uniform_()
-            self.weight.data.fill_(1)
+        if self.use_scale:
+            self.weight.data.uniform_()
+        else:
+            self.weight.data.fill_(1.0)
+        if self.use_bias:
             self.bias.data.zero_()
 
     def forward(self, input):
