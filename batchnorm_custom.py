@@ -35,7 +35,7 @@ class _BatchNorm(Module):
         if self.use_scale:
             self.weight.data.uniform_()
         else:
-            self.weight.data.fill_(1.0)
+            self.weight.data.fill_(0)
         if self.use_bias:
             self.bias.data.zero_()
 
