@@ -32,9 +32,8 @@ class _BatchNorm(Module):
         self.running_mean.zero_()
         self.running_var.fill_(1)
         #if self.affine:
-        if self.use_scale:
+        if self.use_scale or self.use_bias:
             self.weight.data.uniform_()
-        if self.use_bias:
             self.bias.data.zero_()
 
     def forward(self, input):
