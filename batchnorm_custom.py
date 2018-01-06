@@ -30,7 +30,7 @@ class _BatchNorm(Module):
 
     def reset_parameters(self):
         self.running_mean.zero_()
-        self.running_var.fill_(1)
+        self.running_var.zero_()
         #if self.affine:
         if self.use_scale or self.use_bias:
             #self.weight.data.uniform_()
