@@ -77,8 +77,7 @@ class VAE(object):
         decoded = slim.layers.linear(p_do, n_hidden_gener_1, scope='FC_decoder')
 
         # DEBUG
-        #self.x_reconstr_mean = tf.nn.softmax(slim.layers.batch_norm(decoded, scope='BN_decoder'))                    # softmax(bn(50->1995))
-        self.x_reconstr_mean = tf.nn.softmax(decoded, scope='decoder')                    # softmax(bn(50->1995))
+        self.x_reconstr_mean = tf.nn.softmax(slim.layers.batch_norm(decoded, scope='BN_decoder'))                    # softmax(bn(50->1995))
 
         print self.x_reconstr_mean
 
