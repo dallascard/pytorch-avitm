@@ -60,10 +60,8 @@ class VAE(object):
         en2_do = slim.layers.dropout(en2, self.keep_prob, scope='en2_dropped')
         self.posterior_mean   = slim.layers.linear(en2_do, self.network_architecture['n_z'], scope='FC_mean')
         self.posterior_logvar = slim.layers.linear(en2_do, self.network_architecture['n_z'], scope='FC_logvar')
-
-        # DEBUG
-        #self.posterior_mean   = slim.layers.batch_norm(self.posterior_mean, scope='BN_mean')
-        #self.posterior_logvar = slim.layers.batch_norm(self.posterior_logvar, scope='BN_logvar')
+        self.posterior_mean   = slim.layers.batch_norm(self.posterior_mean, scope='BN_mean')
+        self.posterior_logvar = slim.layers.batch_norm(self.posterior_logvar, scope='BN_logvar')
 
         with tf.name_scope('z_scope'):
             eps = tf.random_normal((self.batch_size, n_z), 0, 1,                            # take noise
