@@ -72,7 +72,7 @@ class VAE(object):
 
         p = slim.layers.softmax(self.z)
         p_do = slim.layers.dropout(p, self.keep_prob, scope='p_dropped')               # dropout(softmax(z))
-        decoded = slim.layers.linear(p_do, n_hidden_gener_1, scope='FC_decoder', weights_regularizer=slim.l1_regularizer(0.1))
+        decoded = slim.layers.linear(p_do, n_hidden_gener_1, scope='FC_decoder', weights_regularizer=slim.l1_regularizer(0.5))
 
         # DEBUG
         #self.x_reconstr_mean = tf.nn.softmax(slim.layers.batch_norm(decoded, scope='BN_decoder'))                    # softmax(bn(50->1995))
