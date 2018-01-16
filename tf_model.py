@@ -126,7 +126,9 @@ class VAE(object):
         #if hasattr(self, 'decoder_weight'):
             #decoder_weight = self.decoder_weight
         #else:
-        decoder_weight = [v for v in tf.global_variables() if v.name=='FC_decoder/weights:0'][0]
+        #decoder_weight = [v for v in tf.global_variables() if v.name=='FC_decoder/weights:0'][0]
+        decoder_weight = self.network_weights['beta']
+
         opt, cost,emb = self.sess.run((self.optimizer, self.cost, decoder_weight),feed_dict={self.x: X, self.keep_prob: .8})
         return cost,emb
 
