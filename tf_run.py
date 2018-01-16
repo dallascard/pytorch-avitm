@@ -108,12 +108,10 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
 
 def print_top_words(beta, feature_names, n_top_words=10):
     print '---------------Printing the Topics------------------'
-    temp = beta[0].copy()
-    temp = temp.sort()
-    print(temp[:-n_top_words - 1:-1])
     for i in range(len(beta)):
         print(" ".join([feature_names[j]
             for j in beta[i].argsort()[:-n_top_words - 1:-1]]))
+        print(np.mean(np.abs(beta[i])))
     print '---------------End of Topics------------------'
 
 def print_perp(model):
