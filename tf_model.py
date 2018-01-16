@@ -12,6 +12,15 @@ slim = tf.contrib.slim
 
 tf.reset_default_graph()
 
+
+def xavier_init(fan_in, fan_out, constant=1):
+    low = -constant*np.sqrt(6.0/(fan_in + fan_out))
+    high = constant*np.sqrt(6.0/(fan_in + fan_out))
+    return tf.random_uniform((fan_in, fan_out),
+                             minval=low, maxval=high,
+                             dtype=tf.float32)
+
+
 class VAE(object):
     """
     See "Auto-Encoding Variational Bayes" by Kingma and Welling for more details.
@@ -53,6 +62,9 @@ class VAE(object):
         """
         n_z = self.network_architecture['n_z']
         n_hidden_gener_1 = self.network_architecture['n_hidden_gener_1']
+
+        self.network_weights = self._initialize_weights(n_hidden_gener_1, n_z)
+
         en1 = slim.layers.linear(self.x, self.network_architecture['n_hidden_recog_1'], scope='FC_en1')
         en1 = tf.nn.softplus(en1, name='softplus1')
         en2 = slim.layers.linear(en1,    self.network_architecture['n_hidden_recog_2'], scope='FC_en2')
@@ -73,13 +85,21 @@ class VAE(object):
         p = slim.layers.softmax(self.z)
         p_do = slim.layers.dropout(p, self.keep_prob, scope='p_dropped')               # dropout(softmax(z))
         #decoded = slim.layers.linear(p_do, n_hidden_gener_1, scope='FC_decoder', weights_regularizer=slim.l1_regularizer(0.01))
-        decoded = slim.layers.linear(p_do, n_hidden_gener_1, scope='FC_decoder')
+        #decoded = slim.layers.linear(p_do, n_hidden_gener_1, scope='FC_decoder')
+        decoded = tf.add(tf.matmul(p_do, self.network_weights['beta']), 0.0)
 
         # DEBUG
         #self.x_reconstr_mean = tf.nn.softmax(slim.layers.batch_norm(decoded, scope='BN_decoder'))                    # softmax(bn(50->1995))
         self.x_reconstr_mean = tf.nn.softmax(decoded)                    # softmax(bn(50->1995))
 
         print self.x_reconstr_mean
+
+    def _initialize_weights(self, n_hidden_gener_1, n_z):
+        all_weights = dict()
+
+        all_weights['beta'] = tf.Variable(xavier_init(n_z, n_hidden_gener_1))
+
+        return all_weights
 
     def _create_loss_optimizer(self):
 
