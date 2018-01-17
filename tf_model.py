@@ -26,7 +26,7 @@ class VAE(object):
     See "Auto-Encoding Variational Bayes" by Kingma and Welling for more details.
     """
     def __init__(self, network_architecture, transfer_fct=tf.nn.softplus,
-                 learning_rate=0.001, batch_size=100, init_bg=None, init_l2_strength=1.0):
+                 learning_rate=0.001, batch_size=100, init_bg=None, init_l2_strength=0.001):
         self.network_architecture = network_architecture
         self.transfer_fct = transfer_fct
         self.learning_rate = learning_rate
@@ -158,3 +158,6 @@ class VAE(object):
         """
         theta_ = self.sess.run((self.z),feed_dict={self.x: np.expand_dims(X, axis=0),self.keep_prob: 1.0})
         return theta_
+
+    def set_l2_strength(self, l2_strength):
+        self.l2_strength = l2_strength

@@ -96,6 +96,11 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
         avg_cost = 0.
         total_batch = int(n_samples_tr / batch_size)
         # Loop over all batches
+
+        # DEBUG!!
+        if epoch > 50:
+            vae.set_l2_strength(1.0)
+
         for i in range(total_batch):
             batch_xs = minibatches.next()
             # Fit training using batch data
