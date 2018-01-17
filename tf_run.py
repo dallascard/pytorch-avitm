@@ -83,7 +83,7 @@ def get_init_bg(data):
 
 
 def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
-          batch_size=200, training_epochs=100, display_step=5, init_bg=None):
+          batch_size=200, training_epochs=100, display_step=5, init_bg=None, min_weights_sq=1e-5):
     tf.reset_default_graph()
     vae = VAE(network_architecture,
                                  learning_rate=learning_rate,
@@ -91,16 +91,18 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
     writer = tf.summary.FileWriter('logs', tf.get_default_graph())
     emb = 0
     bg = 0
+
+    total_batch = int(n_samples_tr / batch_size)
+    l2_strength = np.zeros([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]]) / float(total_batch)
+
     # Training cycle
     for epoch in range(training_epochs):
         avg_cost = 0.
-        total_batch = int(n_samples_tr / batch_size)
         # Loop over all batches
 
         # DEBUG!!
         #if epoch > 50:
         #    l2_strength = 0.0001 * l2_strength
-        l2_strength = 0.1 * np.ones([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]]) / float(total_batch)
 
         for i in range(total_batch):
             batch_xs = minibatches.next()
@@ -114,6 +116,13 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
                 print 'Encountered NaN, stopping training. Please check the learning_rate settings and the momentum.'
                 # return vae,emb
                 sys.exit()
+
+        weights = np.array(vae.get_weights())
+        print(weights.shape, weights.mean())
+        weights_sq = weights ** 2
+        weights_sq[weights_sq < min_weights_sq] = min_weights_sq
+
+        l2_strength = 1.0 / weights_sq / float(total_batch)
 
         # Display logs per epoch step
         if epoch % display_step == 0:
