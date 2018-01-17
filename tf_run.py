@@ -74,7 +74,10 @@ def create_minibatch(data):
         yield data[ixs]
 
 def get_init_bg(data):
-    return np.array(np.log(np.sum(data, axis=0) - np.log(float(np.sum(data)))), dtype=np.float32)
+    bg = np.array(np.log(np.sum(data, axis=0) - np.log(float(np.sum(data)))), dtype=np.float32)
+    print(bg.shape, bg.mean)
+    return bg
+
 
 def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
           batch_size=200, training_epochs=100, display_step=5, init_bg=None):
