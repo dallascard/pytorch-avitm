@@ -82,6 +82,7 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
                                  batch_size=batch_size)
     writer = tf.summary.FileWriter('logs', tf.get_default_graph())
     emb=0
+    bg=0
     # Training cycle
     for epoch in range(training_epochs):
         avg_cost = 0.
@@ -119,7 +120,9 @@ def print_top_bg(bg, feature_names, n_top_words=10):
     print '---------------Printing the Topics------------------'
     print(" ".join([feature_names[j]
                     for j in bg.argsort()[:-n_top_words - 1:-1]]))
-    print(bg.sort()[:-n_top_words-1:-1])
+    temp = bg.copy()
+    temp.sort()
+    print(temp[:-n_top_words-1:-1])
     print '---------------End of Topics------------------'
 
 

@@ -136,8 +136,9 @@ class VAE(object):
         #else:
         #decoder_weight = [v for v in tf.global_variables() if v.name=='FC_decoder/weights:0'][0]
         decoder_weight = self.network_weights['beta']
+        background = self.network_weights['background']
 
-        opt, cost, emb, bg = self.sess.run((self.optimizer, self.cost, decoder_weight, self.network_weights['background']), feed_dict={self.x: X, self.keep_prob: .8})
+        opt, cost, emb, bg = self.sess.run((self.optimizer, self.cost, decoder_weight, background), feed_dict={self.x: X, self.keep_prob: .8})
         return cost, emb, bg
 
     def test(self, X):
