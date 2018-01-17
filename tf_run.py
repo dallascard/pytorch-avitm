@@ -114,6 +114,15 @@ def print_top_words(beta, feature_names, n_top_words=10):
         print(np.mean(np.abs(beta[i])))
     print '---------------End of Topics------------------'
 
+
+def print_top_bg(bg, feature_names, n_top_words=10):
+    print '---------------Printing the Topics------------------'
+    print(" ".join([feature_names[j]
+                    for j in bg.argsort()[:-n_top_words - 1:-1]]))
+    print(bg.sort()[:-n_top_words-1:-1])
+    print '---------------End of Topics------------------'
+
+
 def print_perp(model):
     cost=[]
     for doc in docs_te:
@@ -180,8 +189,9 @@ def main(argv):
     network_architecture,batch_size,learning_rate=make_network(f,s,t,b,r)
     print network_architecture
     print opts
-    vae,emb = train(network_architecture, minibatches,m, training_epochs=e,batch_size=batch_size,learning_rate=learning_rate)
+    vae, emb, bg = train(network_architecture, minibatches,m, training_epochs=e,batch_size=batch_size,learning_rate=learning_rate)
     print_top_words(emb, zip(*sorted(vocab.items(), key=lambda x: x[1]))[0])
+    print_top_bg(bg, zip(*sorted(vocab.items(), key=lambda x: x[1]))[0])
     print_perp(vae)
 
 if __name__ == "__main__":
