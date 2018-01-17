@@ -86,7 +86,7 @@ class VAE(object):
         p_do = slim.layers.dropout(p, self.keep_prob, scope='p_dropped')               # dropout(softmax(z))
         #decoded = slim.layers.linear(p_do, n_hidden_gener_1, scope='FC_decoder', weights_regularizer=slim.l1_regularizer(0.01))
         #decoded = slim.layers.linear(p_do, n_hidden_gener_1, scope='FC_decoder')
-        decoded = tf.add(tf.matmul(p_do, self.network_weights['beta']), 0.0)
+        decoded = tf.add(tf.matmul(p_do, self.network_weights['beta']), self.network_weights['background'])
 
         # DEBUG
         #self.x_reconstr_mean = tf.nn.softmax(slim.layers.batch_norm(decoded, scope='BN_decoder'))                    # softmax(bn(50->1995))
@@ -98,6 +98,7 @@ class VAE(object):
         all_weights = dict()
 
         all_weights['beta'] = tf.Variable(xavier_init(n_z, n_hidden_gener_1))
+        all_weights['background'] = tf.Variable(tf.zeros(n_hidden_gener_1, dtype=tf.float32))
 
         return all_weights
 
@@ -114,14 +115,16 @@ class VAE(object):
         logvar_division = self.prior_logvar - self.posterior_logvar
         KLD = 0.5 * (tf.reduce_sum(var_division + diff_term + logvar_division, 1) - self.h_dim )
 
-        l2_regularizer = tf.contrib.layers.l1_regularizer(
-            scale=0.005, scope=None
-        )
-        regularization_penalty = tf.contrib.layers.apply_regularization(l2_regularizer, self.network_weights['beta'])
-        self.cost = tf.reduce_mean(NL + KLD + regularization_penalty)
+        #l2_regularizer = tf.contrib.layers.l1_regularizer(
+        #    scale=0.005, scope=None
+        #)
+        #regularization_penalty = tf.contrib.layers.apply_regularization(l2_regularizer, self.network_weights['beta'])
+        #self.cost = tf.reduce_mean(NL + KLD + regularization_penalty)
 
         #regularizer = tf.nn.l2_loss(self.network_weights['beta'])
         #self.cost = tf.reduce_mean(NL + KLD + 0.005 * regularizer)
+
+        self.cost = tf.reduce_mean(NL + KLD)
 
         self.optimizer = \
             tf.train.AdamOptimizer(learning_rate=self.learning_rate,beta1=0.99).minimize(self.cost)
@@ -134,7 +137,7 @@ class VAE(object):
         #decoder_weight = [v for v in tf.global_variables() if v.name=='FC_decoder/weights:0'][0]
         decoder_weight = self.network_weights['beta']
 
-        opt, cost,emb = self.sess.run((self.optimizer, self.cost, decoder_weight),feed_dict={self.x: X, self.keep_prob: .8})
+        opt, cost,emb = self.sess.run((self.optimizer, self.cost, decoder_weight, self.network_weights['background']), feed_dict={self.x: X, self.keep_prob: .8})
         return cost,emb
 
     def test(self, X):
