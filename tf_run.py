@@ -123,7 +123,7 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
         # Display logs per epoch step
         if epoch % display_step == 0:
             print "Epoch:", '%04d' % (epoch+1), \
-                  "cost=", "{:.9f}".format(avg_cost)
+                  "cost=", "{:.9f}".format(avg_cost), "avemb=", "{:.9f}".format(emb.mean())
     return vae, emb, bg
 
 def print_top_words(beta, feature_names, n_top_words=10):
@@ -135,7 +135,10 @@ def print_top_words(beta, feature_names, n_top_words=10):
         temp.sort()
         print(temp[:-5-1:-1])
         print(temp[:5])
-        print(np.mean(np.abs(beta[i])))
+        sparsity = np.sum(np.abs(beta[i]) < 1e-4)
+        print(np.mean(np.abs(beta[i])), sparsity)
+
+
     print '---------------End of Topics------------------'
 
 
