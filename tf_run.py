@@ -118,7 +118,7 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
                 sys.exit()
 
         weights = emb
-        print(weights.shape, weights.mean())
+        #print(weights.shape, weights.mean())
         weights_sq = weights ** 2
         weights_sq[weights_sq < min_weights_sq] = min_weights_sq
 
