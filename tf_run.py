@@ -100,7 +100,7 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
 
         # DEBUG!!
         if epoch > 50:
-            l2_strength = 1.0
+            l2_strength = 1000 * l2_strength
 
         for i in range(total_batch):
             batch_xs = minibatches.next()
