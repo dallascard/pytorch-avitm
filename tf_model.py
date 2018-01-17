@@ -144,17 +144,17 @@ class VAE(object):
         decoder_weight = self.network_weights['beta']
         background = self.network_weights['background']
 
-        opt, cost, emb, bg = self.sess.run((self.optimizer, self.cost, decoder_weight, background), feed_dict={self.x: X, self.keep_prob: .8, self.l2_strength: 0.0001})
+        opt, cost, emb, bg = self.sess.run((self.optimizer, self.cost, decoder_weight, background), feed_dict={self.x: X, self.keep_prob: .8, self.l2_strength: 0.001})
         return cost, emb, bg
 
     def test(self, X):
         """Test the model and return the lowerbound on the log-likelihood.
         """
-        cost = self.sess.run((self.cost),feed_dict={self.x: np.expand_dims(X, axis=0),self.keep_prob: 1.0, self.l2_strength:0.0001})
+        cost = self.sess.run((self.cost),feed_dict={self.x: np.expand_dims(X, axis=0),self.keep_prob: 1.0, self.l2_strength: 0.0001})
         return cost
 
     def topic_prop(self, X):
         """heta_ is the topic proportion vector. Apply softmax transformation to it before use.
         """
-        theta_ = self.sess.run((self.z),feed_dict={self.x: np.expand_dims(X, axis=0),self.keep_prob: 1.0, self.l2_strength:0.0001})
+        theta_ = self.sess.run((self.z),feed_dict={self.x: np.expand_dims(X, axis=0),self.keep_prob: 1.0, self.l2_strength: 0.0001})
         return theta_
