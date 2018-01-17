@@ -130,7 +130,8 @@ class VAE(object):
 
         regularizer = tf.nn.l2_loss(self.network_weights['beta'])
         #self.cost = tf.add(tf.reduce_mean(NL + KLD), tf.reduce_mean(tf.reduce_sum(regularizer), 1))
-        self.cost = tf.add(tf.reduce_mean(NL + KLD), 1.0 * regularizer)
+        #self.cost = tf.add(tf.reduce_mean(NL + KLD), 1.0 * regularizer)
+        self.cost = tf.add(tf.reduce_mean(NL + KLD), tf.reduce_sum(0.5 * tf.square(self.network_weights['beta'])))
 
         #self.cost = tf.reduce_mean(NL + KLD)
 
@@ -152,14 +153,14 @@ class VAE(object):
     def test(self, X):
         """Test the model and return the lowerbound on the log-likelihood.
         """
-        l2_strength = np.zeros_like(self.network_weights['beta'])
+        l2_strength = np.zeros_like(self.network_weights['beta'].shape)
         cost = self.sess.run((self.cost),feed_dict={self.x: np.expand_dims(X, axis=0),self.keep_prob: 1.0, self.l2_strength: l2_strength})
         return cost
 
     def topic_prop(self, X):
         """heta_ is the topic proportion vector. Apply softmax transformation to it before use.
         """
-        l2_strength = np.zeros_like(self.network_weights['beta'])
+        l2_strength = np.zeros_like(self.network_weights['beta'].shape)
         theta_ = self.sess.run((self.z),feed_dict={self.x: np.expand_dims(X, axis=0),self.keep_prob: 1.0, self.l2_strength: l2_strength})
         return theta_
 
