@@ -150,7 +150,7 @@ def print_perp(model):
     for doc in docs_te:
         doc = doc.astype('float32')
         n_d = np.sum(doc)
-        c=model.test(doc)
+        c=model.test(doc, l2_strength=0.0)
         cost.append(c/n_d)
     print 'The approximated perplexity is: ',(np.exp(np.mean(np.array(cost))))
 
