@@ -114,9 +114,9 @@ class VAE(object):
         logvar_division = self.prior_logvar - self.posterior_logvar
         KLD = 0.5 * (tf.reduce_sum(var_division + diff_term + logvar_division, 1) - self.h_dim )
 
-        #reg_losses = slim.losses.get_regularization_losses()
+        regularizer = tf.nn.l2_loss(self.network_weights['beta'])
 
-        self.cost = tf.reduce_mean(NL + KLD)
+        self.cost = tf.reduce_mean(NL + KLD + 0.1 * regularizer)
 
         self.optimizer = \
             tf.train.AdamOptimizer(learning_rate=self.learning_rate,beta1=0.99).minimize(self.cost)
