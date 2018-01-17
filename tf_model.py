@@ -32,7 +32,7 @@ class VAE(object):
         self.learning_rate = learning_rate
         self.batch_size = batch_size
         #self.l2_strength = l2_strength
-        self.l2_strength = tf.placeholder(tf.float32, shape=(), name="init")
+        self.l2_strength = tf.placeholder(tf.float32, name="l2_strength")
         print 'Learning Rate:', self.learning_rate
 
         # tf Graph input
@@ -150,11 +150,11 @@ class VAE(object):
     def test(self, X):
         """Test the model and return the lowerbound on the log-likelihood.
         """
-        cost = self.sess.run((self.cost),feed_dict={self.x: np.expand_dims(X, axis=0),self.keep_prob: 1.0})
+        cost = self.sess.run((self.cost),feed_dict={self.x: np.expand_dims(X, axis=0),self.keep_prob: 1.0, self.l2_strength:0.0001})
         return cost
 
     def topic_prop(self, X):
         """heta_ is the topic proportion vector. Apply softmax transformation to it before use.
         """
-        theta_ = self.sess.run((self.z),feed_dict={self.x: np.expand_dims(X, axis=0),self.keep_prob: 1.0})
+        theta_ = self.sess.run((self.z),feed_dict={self.x: np.expand_dims(X, axis=0),self.keep_prob: 1.0, self.l2_strength:0.0001})
         return theta_
