@@ -26,11 +26,12 @@ class VAE(object):
     See "Auto-Encoding Variational Bayes" by Kingma and Welling for more details.
     """
     def __init__(self, network_architecture, transfer_fct=tf.nn.softplus,
-                 learning_rate=0.001, batch_size=100, init_bg=None):
+                 learning_rate=0.001, batch_size=100, init_bg=None, l2_strength=0.0001):
         self.network_architecture = network_architecture
         self.transfer_fct = transfer_fct
         self.learning_rate = learning_rate
         self.batch_size = batch_size
+        self.l2_strength = l2_strength
         print 'Learning Rate:', self.learning_rate
 
         # tf Graph input
@@ -119,14 +120,14 @@ class VAE(object):
         logvar_division = self.prior_logvar - self.posterior_logvar
         KLD = 0.5 * (tf.reduce_sum(var_division + diff_term + logvar_division, 1) - self.h_dim )
 
-        l1_regularizer = tf.contrib.layers.l1_regularizer(
-            scale=0.0001, scope=None
-        )
-        regularization_penalty = tf.contrib.layers.apply_regularization(l1_regularizer, [self.network_weights['beta']])
-        self.cost = tf.reduce_mean(NL + KLD + regularization_penalty)
+        #l1_regularizer = tf.contrib.layers.l1_regularizer(
+        #    scale=0.0001, scope=None
+        #)
+        #regularization_penalty = tf.contrib.layers.apply_regularization(l1_regularizer, [self.network_weights['beta']])
+        #self.cost = tf.reduce_mean(NL + KLD + regularization_penalty)
 
-        #regularizer = tf.nn.l2_loss(self.network_weights['beta'])
-        #self.cost = tf.reduce_mean(NL + KLD + 0.0005 * regularizer)
+        regularizer = tf.nn.l2_loss(self.network_weights['beta'])
+        self.cost = tf.reduce_mean(NL + KLD + self.l2_strength * regularizer)
 
         #self.cost = tf.reduce_mean(NL + KLD)
 
