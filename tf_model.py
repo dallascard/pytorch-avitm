@@ -132,7 +132,7 @@ class VAE(object):
         #self.cost = tf.add(tf.reduce_mean(NL + KLD), tf.reduce_mean(tf.reduce_sum(regularizer), 1))
         #self.cost = tf.add(tf.reduce_mean(NL + KLD), 1.0 * regularizer)
         #self.cost = tf.add(tf.reduce_mean(NL + KLD), tf.reduce_sum(0.5 * tf.square(self.network_weights['beta'])))
-        self.cost = tf.add(tf.reduce_mean(NL + KLD), tf.reduce_sum(0.5 * tf.multiply(self.l2_strength, tf.square(self.network_weights['beta']))))
+        self.cost = tf.add(tf.reduce_mean(NL + KLD), tf.reduce_sum(tf.multiply(self.l2_strength, tf.square(self.network_weights['beta']))))
 
         #self.cost = tf.reduce_mean(NL + KLD)
 
