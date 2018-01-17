@@ -90,7 +90,7 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
         for i in range(total_batch):
             batch_xs = minibatches.next()
             # Fit training using batch data
-            cost,emb = vae.partial_fit(batch_xs)
+            cost, emb = vae.partial_fit(batch_xs)
             # Compute average loss
             avg_cost += cost / n_samples_tr * batch_size
 
