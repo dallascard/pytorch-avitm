@@ -128,7 +128,7 @@ class VAE(object):
         #regularizer = tf.nn.l2_loss(self.network_weights['beta'])
         #self.cost = tf.reduce_mean(NL + KLD + 0.0005 * regularizer)
 
-        #self.cost = tf.reduce_mean(NL + KLD)
+        self.cost = tf.reduce_mean(NL + KLD)
 
         self.optimizer = \
             tf.train.AdamOptimizer(learning_rate=self.learning_rate,beta1=0.99).minimize(self.cost)
