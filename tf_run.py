@@ -91,7 +91,6 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
     writer = tf.summary.FileWriter('logs', tf.get_default_graph())
     emb = 0
     bg = 0
-    l2_strength = 1.0 * np.ones([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]])
     # Training cycle
     for epoch in range(training_epochs):
         avg_cost = 0.
@@ -99,8 +98,9 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
         # Loop over all batches
 
         # DEBUG!!
-        if epoch > 50:
-            l2_strength = 0.0001 * l2_strength
+        #if epoch > 50:
+        #    l2_strength = 0.0001 * l2_strength
+        l2_strength = 0.1 * np.ones([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]]) / float(total_batch)
 
         for i in range(total_batch):
             batch_xs = minibatches.next()
@@ -150,7 +150,7 @@ def print_perp(model):
     for doc in docs_te:
         doc = doc.astype('float32')
         n_d = np.sum(doc)
-        c=model.test(doc, l2_strength=0.0)
+        c=model.test(doc)
         cost.append(c/n_d)
     print 'The approximated perplexity is: ',(np.exp(np.mean(np.array(cost))))
 

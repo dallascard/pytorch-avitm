@@ -162,5 +162,8 @@ class VAE(object):
         theta_ = self.sess.run((self.z),feed_dict={self.x: np.expand_dims(X, axis=0),self.keep_prob: 1.0, self.l2_strength: l2_strength})
         return theta_
 
+    def get_weights(self):
+        return self.network_weights['beta'].values
+
     #def set_l2_strength(self, l2_strength):
     #    self.l2_strength = l2_strength
