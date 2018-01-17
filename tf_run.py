@@ -74,7 +74,9 @@ def create_minibatch(data):
         yield data[ixs]
 
 def get_init_bg(data):
-    bg = np.array(np.log(np.sum(data, axis=0) - np.log(float(np.sum(data)))), dtype=np.float32)
+    sums = np.sum(data)
+    print(np.min(sums), np.max(sums))
+    bg = np.array(np.log(np.sum(data, axis=0)) - np.log(float(np.sum(data))), dtype=np.float32)
     print(bg.shape, bg.mean)
     return bg
 
