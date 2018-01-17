@@ -34,6 +34,7 @@ print 'Dim Test Data',data_te.shape
 
 '''--------------Global Params---------------'''
 n_samples_tr = data_tr.shape[0]
+print(n_samples_tr)
 n_samples_te = data_te.shape[0]
 docs_tr = data_tr
 docs_te = data_te
@@ -74,10 +75,10 @@ def create_minibatch(data):
         yield data[ixs]
 
 def get_init_bg(data):
-    sums = np.sum(data)
+    sums = np.sum(data, axis=0)+1
     print(np.min(sums), np.max(sums))
-    bg = np.array(np.log(np.sum(data, axis=0)) - np.log(float(np.sum(data))), dtype=np.float32)
-    print(bg.shape, bg.mean)
+    bg = np.array(np.log(sums) - np.log(float(np.sum(sums))), dtype=np.float32)
+    print(bg.shape, np.mean(bg))
     return bg
 
 
