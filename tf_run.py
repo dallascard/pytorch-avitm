@@ -134,7 +134,8 @@ def print_top_bg(bg, feature_names, n_top_words=10):
                     for j in bg.argsort()[:-n_top_words - 1:-1]]))
     temp = bg.copy()
     temp.sort()
-    print(temp[:-n_top_words-1:-1])
+    print(temp[:-5-1:-1])
+    print(temp[:5])
     print '---------------End of Topics------------------'
 
 
