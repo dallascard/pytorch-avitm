@@ -204,7 +204,7 @@ def main(argv):
     network_architecture,batch_size,learning_rate=make_network(f,s,t,b,r)
     print network_architecture
     print opts
-    vae, emb, bg = train(network_architecture, minibatches,m, training_epochs=e,batch_size=batch_size,learning_rate=learning_rate, init_bg=None)
+    vae, emb, bg = train(network_architecture, minibatches,m, training_epochs=e,batch_size=batch_size,learning_rate=learning_rate, init_bg=init_bg)
     print_top_words(emb, zip(*sorted(vocab.items(), key=lambda x: x[1]))[0])
     print_top_bg(bg, zip(*sorted(vocab.items(), key=lambda x: x[1]))[0])
     print_perp(vae)
