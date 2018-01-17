@@ -144,7 +144,7 @@ class VAE(object):
         decoder_weight = self.network_weights['beta']
         background = self.network_weights['background']
 
-        opt, cost, emb, bg = self.sess.run((self.optimizer, self.cost, decoder_weight, background), feed_dict={self.x: X, self.keep_prob: .8, self.l2_strength: 0.0001})
+        opt, cost, emb, bg = self.sess.run((self.optimizer, self.cost, decoder_weight, background), feed_dict={self.x: X, self.keep_prob: .8})
         return cost, emb, bg
 
     def test(self, X):
