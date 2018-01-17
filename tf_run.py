@@ -73,13 +73,15 @@ def create_minibatch(data):
         ixs = rng.randint(data.shape[0], size=batch_size)
         yield data[ixs]
 
+def get_init_bg(data):
+    return np.log(np.sum(data, axis=0) - np.log(float(np.sum(data))))
 
 def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
-          batch_size=200, training_epochs=100, display_step=5):
+          batch_size=200, training_epochs=100, display_step=5, init_bg=None):
     tf.reset_default_graph()
     vae = VAE(network_architecture,
                                  learning_rate=learning_rate,
-                                 batch_size=batch_size)
+                                 batch_size=batch_size, init_bg=init_bg)
     writer = tf.summary.FileWriter('logs', tf.get_default_graph())
     emb=0
     bg=0
@@ -192,11 +194,12 @@ def main(argv):
         elif opt == "-e":
             e=int(arg)
 
+    init_bg = get_init_bg(docs_tr)
     minibatches = create_minibatch(docs_tr.astype('float32'))
     network_architecture,batch_size,learning_rate=make_network(f,s,t,b,r)
     print network_architecture
     print opts
-    vae, emb, bg = train(network_architecture, minibatches,m, training_epochs=e,batch_size=batch_size,learning_rate=learning_rate)
+    vae, emb, bg = train(network_architecture, minibatches,m, training_epochs=e,batch_size=batch_size,learning_rate=learning_rate, init_bg=init_bg)
     print_top_words(emb, zip(*sorted(vocab.items(), key=lambda x: x[1]))[0])
     print_top_bg(bg, zip(*sorted(vocab.items(), key=lambda x: x[1]))[0])
     print_perp(vae)

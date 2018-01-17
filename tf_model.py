@@ -26,7 +26,7 @@ class VAE(object):
     See "Auto-Encoding Variational Bayes" by Kingma and Welling for more details.
     """
     def __init__(self, network_architecture, transfer_fct=tf.nn.softplus,
-                 learning_rate=0.001, batch_size=100):
+                 learning_rate=0.001, batch_size=100, init_bg=None):
         self.network_architecture = network_architecture
         self.transfer_fct = transfer_fct
         self.learning_rate = learning_rate
@@ -44,7 +44,7 @@ class VAE(object):
                                 ( 1.0/(self.h_dim*self.h_dim) )*np.sum(1.0/self.a,1) ).T  )
         self.prior_logvar = tf.log(self.prior_var)
 
-        self._create_network()
+        self._create_network(init_bg)
         with tf.name_scope('cost'):
             self._create_loss_optimizer()
 
@@ -53,7 +53,7 @@ class VAE(object):
         self.sess = tf.InteractiveSession()
         self.sess.run(init)
 
-    def _create_network(self):
+    def _create_network(self, init_bg=None):
         """
         steps:
         1. initialize weights
@@ -63,7 +63,7 @@ class VAE(object):
         n_z = self.network_architecture['n_z']
         n_hidden_gener_1 = self.network_architecture['n_hidden_gener_1']
 
-        self.network_weights = self._initialize_weights(n_hidden_gener_1, n_z)
+        self.network_weights = self._initialize_weights(n_hidden_gener_1, n_z, init_bg)
 
         en1 = slim.layers.linear(self.x, self.network_architecture['n_hidden_recog_1'], scope='FC_en1')
         en1 = tf.nn.softplus(en1, name='softplus1')
@@ -94,11 +94,15 @@ class VAE(object):
 
         print self.x_reconstr_mean
 
-    def _initialize_weights(self, n_hidden_gener_1, n_z):
+    def _initialize_weights(self, n_hidden_gener_1, n_z, bg_init=None):
         all_weights = dict()
 
         all_weights['beta'] = tf.Variable(xavier_init(n_z, n_hidden_gener_1))
-        all_weights['background'] = tf.Variable(tf.zeros(n_hidden_gener_1, dtype=tf.float32))
+
+        if bg_init is not None:
+            all_weights['background'] = tf.Variable(bg_init)
+        else:
+            all_weights['background'] = tf.Variable(tf.zeros(n_hidden_gener_1, dtype=tf.float32))
 
         return all_weights
 
@@ -115,14 +119,14 @@ class VAE(object):
         logvar_division = self.prior_logvar - self.posterior_logvar
         KLD = 0.5 * (tf.reduce_sum(var_division + diff_term + logvar_division, 1) - self.h_dim )
 
-        l1_regularizer = tf.contrib.layers.l1_regularizer(
-            scale=0.0001, scope=None
-        )
-        regularization_penalty = tf.contrib.layers.apply_regularization(l1_regularizer, [self.network_weights['beta']])
-        self.cost = tf.reduce_mean(NL + KLD + regularization_penalty)
+        #l1_regularizer = tf.contrib.layers.l1_regularizer(
+        #    scale=0.0001, scope=None
+        #)
+        #regularization_penalty = tf.contrib.layers.apply_regularization(l1_regularizer, [self.network_weights['beta']])
+        #self.cost = tf.reduce_mean(NL + KLD + regularization_penalty)
 
-        #regularizer = tf.nn.l2_loss(self.network_weights['beta'])
-        #self.cost = tf.reduce_mean(NL + KLD + 0.0001 * regularizer)
+        regularizer = tf.nn.l2_loss(self.network_weights['beta'])
+        self.cost = tf.reduce_mean(NL + KLD + 0.0005 * regularizer)
 
         #self.cost = tf.reduce_mean(NL + KLD)
 
