@@ -83,7 +83,7 @@ def get_init_bg(data):
 
 
 def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
-          batch_size=200, training_epochs=100, display_step=5, init_bg=None, min_weights_sq=1e-4):
+          batch_size=200, training_epochs=100, display_step=5, init_bg=None, min_weights_sq=1e-5):
     tf.reset_default_graph()
     vae = VAE(network_architecture,
                                  learning_rate=learning_rate,
@@ -93,8 +93,8 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
     bg = 0
 
     total_batch = int(n_samples_tr / batch_size)
-    #l2_strength = np.ones([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]]) / float(n_samples_tr)
-    l2_strength = np.zeros([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]])
+    l2_strength = np.ones([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]]) / float(n_samples_tr)
+    #l2_strength = np.zeros([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]])
 
     # Training cycle
     for epoch in range(training_epochs):
@@ -114,13 +114,13 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
                 # return vae,emb
                 sys.exit()
 
-            weights = emb
-            #print(weights.shape, weights.mean())
-            weights_sq = weights ** 2
-            weights_sq[weights_sq < min_weights_sq] = min_weights_sq
+        weights = emb
+        #print(weights.shape, weights.mean())
+        weights_sq = weights ** 2
+        weights_sq[weights_sq < min_weights_sq] = min_weights_sq
 
-            #l2_strength = weights_sq / float(n_samples_tr)
-            l2_strength = np.zeros([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]])
+        l2_strength = weights_sq / float(n_samples_tr)
+        #l2_strength = np.zeros([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]])
 
         # Display logs per epoch step
         if epoch % display_step == 0:
