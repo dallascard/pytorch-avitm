@@ -89,9 +89,9 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
                                  learning_rate=learning_rate,
                                  batch_size=batch_size, init_bg=init_bg)
     writer = tf.summary.FileWriter('logs', tf.get_default_graph())
-    emb=0
-    bg=0
-    l2_strength=0.0001
+    emb = 0
+    bg = 0
+    l2_strength = 0.0001 * np.ones([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]])
     # Training cycle
     for epoch in range(training_epochs):
         avg_cost = 0.

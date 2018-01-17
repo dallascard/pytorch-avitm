@@ -32,7 +32,8 @@ class VAE(object):
         self.learning_rate = learning_rate
         self.batch_size = batch_size
         #self.l2_strength = init_l2_strength
-        self.l2_strength = tf.placeholder(tf.float32, name="l2_strength")
+        #self.l2_strength = tf.placeholder(tf.float32, name="l2_strength")
+        self.l2_strength = tf.placeholder(tf.float32, [network_architecture["n_z"], network_architecture["n_hidden_gener_1"]], name="l2_strength")
         print 'Learning Rate:', self.learning_rate
 
         # tf Graph input
@@ -128,14 +129,14 @@ class VAE(object):
         #self.cost = tf.reduce_mean(NL + KLD + regularization_penalty)
 
         regularizer = tf.nn.l2_loss(self.network_weights['beta'])
-        self.cost = tf.reduce_mean(NL + KLD + tf.reduce_sum(self.l2_strength * tf.ones_like(regularizer) * regularizer))
+        self.cost = tf.reduce_mean(NL + KLD + tf.reduce_sum(self.l2_strength * regularizer))
 
         #self.cost = tf.reduce_mean(NL + KLD)
 
         self.optimizer = \
             tf.train.AdamOptimizer(learning_rate=self.learning_rate,beta1=0.99).minimize(self.cost)
 
-    def partial_fit(self, X, l2_strength=0.0001):
+    def partial_fit(self, X, l2_strength):
 
         #if hasattr(self, 'decoder_weight'):
             #decoder_weight = self.decoder_weight
@@ -147,13 +148,13 @@ class VAE(object):
         opt, cost, emb, bg = self.sess.run((self.optimizer, self.cost, decoder_weight, background), feed_dict={self.x: X, self.keep_prob: .8, self.l2_strength: l2_strength})
         return cost, emb, bg
 
-    def test(self, X, l2_strength=0.0001):
+    def test(self, X, l2_strength):
         """Test the model and return the lowerbound on the log-likelihood.
         """
         cost = self.sess.run((self.cost),feed_dict={self.x: np.expand_dims(X, axis=0),self.keep_prob: 1.0, self.l2_strength: l2_strength})
         return cost
 
-    def topic_prop(self, X, l2_strength=0.0001):
+    def topic_prop(self, X, l2_strength):
         """heta_ is the topic proportion vector. Apply softmax transformation to it before use.
         """
         theta_ = self.sess.run((self.z),feed_dict={self.x: np.expand_dims(X, axis=0),self.keep_prob: 1.0, self.l2_strength: l2_strength})
