@@ -89,8 +89,8 @@ class VAE(object):
         decoded = tf.add(tf.matmul(p_do, self.network_weights['beta']), self.network_weights['background'])
 
         # DEBUG
-        self.x_reconstr_mean = tf.nn.softmax(slim.layers.batch_norm(decoded, scope='BN_decoder'))                    # softmax(bn(50->1995))
-        #self.x_reconstr_mean = tf.nn.softmax(decoded)                    # softmax(bn(50->1995))
+        #self.x_reconstr_mean = tf.nn.softmax(slim.layers.batch_norm(decoded, scope='BN_decoder'))                    # softmax(bn(50->1995))
+        self.x_reconstr_mean = tf.nn.softmax(decoded)                    # softmax(bn(50->1995))
 
         print self.x_reconstr_mean
 
