@@ -120,8 +120,6 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
 
             l2_strength = 0.5 / weights_sq / float(n_samples_tr)
 
-        print(np.mean(emb))
-
         # Display logs per epoch step
         if epoch % display_step == 0:
             print "Epoch:", '%04d' % (epoch+1), \
