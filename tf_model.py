@@ -118,7 +118,7 @@ class VAE(object):
         l1_regularizer = tf.contrib.layers.l1_regularizer(
             scale=0.0001, scope=None
         )
-        regularization_penalty = tf.contrib.layers.apply_regularization(l1_regularizer, self.network_weights['beta'])
+        regularization_penalty = tf.contrib.layers.apply_regularization(l1_regularizer, [self.network_weights['beta']])
         self.cost = tf.reduce_mean(NL + KLD + regularization_penalty)
 
         #regularizer = tf.nn.l2_loss(self.network_weights['beta'])
