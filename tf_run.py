@@ -118,7 +118,7 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
             weights_sq = weights ** 2
             weights_sq[weights_sq < min_weights_sq] = min_weights_sq
 
-            l2_strength = 0.5 / weights_sq / float(total_batch)
+            l2_strength = 0.5 / weights_sq / float(n_samples_tr)
 
         print(np.mean(emb))
 
