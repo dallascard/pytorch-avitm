@@ -26,7 +26,7 @@ class VAE(object):
     See "Auto-Encoding Variational Bayes" by Kingma and Welling for more details.
     """
     def __init__(self, network_architecture, transfer_fct=tf.nn.softplus,
-                 learning_rate=0.001, batch_size=100, init_bg=None, init_l2_strength=0.01):
+                 learning_rate=0.001, batch_size=100, init_bg=None, init_l2_strength=0.1):
         self.network_architecture = network_architecture
         self.transfer_fct = transfer_fct
         self.learning_rate = learning_rate
