@@ -26,12 +26,13 @@ class VAE(object):
     See "Auto-Encoding Variational Bayes" by Kingma and Welling for more details.
     """
     def __init__(self, network_architecture, transfer_fct=tf.nn.softplus,
-                 learning_rate=0.001, batch_size=100, init_bg=None, l2_strength=0.0001):
+                 learning_rate=0.001, batch_size=100, init_bg=None):
         self.network_architecture = network_architecture
         self.transfer_fct = transfer_fct
         self.learning_rate = learning_rate
         self.batch_size = batch_size
-        self.l2_strength = l2_strength
+        #self.l2_strength = l2_strength
+        self.l2_strength = tf.placeholder(tf.float32, shape=(), name="init")
         print 'Learning Rate:', self.learning_rate
 
         # tf Graph input
@@ -90,8 +91,8 @@ class VAE(object):
         decoded = tf.add(tf.matmul(p_do, self.network_weights['beta']), self.network_weights['background'])
 
         # DEBUG
-        #self.x_reconstr_mean = tf.nn.softmax(slim.layers.batch_norm(decoded, scope='BN_decoder'))                    # softmax(bn(50->1995))
-        self.x_reconstr_mean = tf.nn.softmax(decoded)                    # softmax(bn(50->1995))
+        self.x_reconstr_mean = tf.nn.softmax(slim.layers.batch_norm(decoded, scope='BN_decoder'))                    # softmax(bn(50->1995))
+        #self.x_reconstr_mean = tf.nn.softmax(decoded)                    # softmax(bn(50->1995))
 
         print self.x_reconstr_mean
 
@@ -143,7 +144,7 @@ class VAE(object):
         decoder_weight = self.network_weights['beta']
         background = self.network_weights['background']
 
-        opt, cost, emb, bg = self.sess.run((self.optimizer, self.cost, decoder_weight, background), feed_dict={self.x: X, self.keep_prob: .8})
+        opt, cost, emb, bg = self.sess.run((self.optimizer, self.cost, decoder_weight, background), feed_dict={self.x: X, self.keep_prob: .8, self.l2_strength: 0.0001})
         return cost, emb, bg
 
     def test(self, X):
