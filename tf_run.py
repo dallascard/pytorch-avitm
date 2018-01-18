@@ -83,7 +83,7 @@ def get_init_bg(data):
 
 
 def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
-          batch_size=200, training_epochs=100, display_step=5, init_bg=None, min_weights_sq=1e-5):
+          batch_size=200, training_epochs=100, display_step=5, init_bg=None, min_weights_sq=1e-7):
     tf.reset_default_graph()
     vae = VAE(network_architecture,
                                  learning_rate=learning_rate,
