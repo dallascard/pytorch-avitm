@@ -94,6 +94,7 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
 
     total_batch = int(n_samples_tr / batch_size)
     l2_strength = np.ones([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]]) #/ float(total_batch)
+    l2_strength[0:4, :] = 0
     #l2_strength = np.zeros([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]])
 
     # Training cycle
@@ -121,6 +122,7 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
 
         #l2_strength = weights_sq# / float(total_batch)
         l2_strength = np.ones([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]])
+        l2_strength[0:4, :] = 0
 
         # Display logs per epoch step
         if epoch % display_step == 0:
