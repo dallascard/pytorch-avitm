@@ -93,9 +93,9 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
     bg = 0
 
     total_batch = int(n_samples_tr / batch_size)
-    l2_strength = np.ones([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]]) #/ float(total_batch)
-    l2_strength[0:4, :] = 0
-    #l2_strength = np.zeros([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]])
+    #l2_strength = np.ones([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]]) #/ float(total_batch)
+    #l2_strength[0:4, :] = 0
+    l2_strength = np.zeros([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]])
 
     # Training cycle
     for epoch in range(training_epochs):
@@ -115,14 +115,16 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
                 # return vae,emb
                 sys.exit()
 
-        weights = emb
-        #print(weights.shape, weights.mean())
-        weights_sq = weights ** 2
-        weights_sq[weights_sq < min_weights_sq] = min_weights_sq
+            weights = emb
+            #print(weights.shape, weights.mean())
+            weights_sq = weights ** 2
+            weights_sq[weights_sq < min_weights_sq] = min_weights_sq
 
-        #l2_strength = weights_sq# / float(total_batch)
-        l2_strength = np.ones([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]])
-        l2_strength[0:4, :] = 0
+            l2_strength = weights_sq / float(n_samples_tr)
+            print(np.mean(l2_strength))
+
+            #l2_strength = np.ones([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]])
+            #l2_strength[0:4, :] = 0
 
         # Display logs per epoch step
         if epoch % display_step == 0:
@@ -139,7 +141,7 @@ def print_top_words(beta, feature_names, n_top_words=10):
         temp.sort()
         print(temp[:-5-1:-1])
         print(temp[:5])
-        sparsity = np.sum(np.abs(beta[i]) < 1e-4)
+        sparsity = np.sum(np.abs(beta[i]) < 1e-3) / float(len(beta[i]))
         print(np.mean(np.abs(beta[i])), sparsity)
 
 
