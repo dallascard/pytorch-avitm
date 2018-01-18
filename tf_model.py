@@ -127,7 +127,11 @@ class VAE(object):
         diff            = self.posterior_mean - self.prior_mean
         diff_term       = diff * diff / self.prior_var
         logvar_division = self.prior_logvar - self.posterior_logvar
-        KLD = 0.5 * (tf.reduce_sum(var_division + diff_term + logvar_division, 1) - self.h_dim )
+
+
+        # DEBUG
+        #KLD = 0.5 * (tf.reduce_sum(var_division + diff_term + logvar_division, 1) - self.h_dim )
+        KLD = -0.5 * tf.reduce_sum(1 + self.posterior_logvar - tf.square(self.posterior_mean) - tf.exp(self.posterior_logvar))
 
         #l1_regularizer = tf.contrib.layers.l1_regularizer(
         #    scale=0.0001, scope=None
