@@ -132,7 +132,7 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
                   "cost=", "{:.9f}".format(avg_cost), "avemb=", "{:.9f}".format(emb.mean())
     return vae, emb, bg
 
-def print_top_words(beta, feature_names, n_top_words=10):
+def print_top_words(beta, feature_names, n_top_words=10, sparsity_threshold=1e-4):
     print '---------------Printing the Topics------------------'
     for i in range(len(beta)):
         print(" ".join([feature_names[j]
@@ -141,7 +141,7 @@ def print_top_words(beta, feature_names, n_top_words=10):
         temp.sort()
         print(temp[:-5-1:-1])
         print(temp[:5])
-        sparsity = np.sum(np.abs(beta[i]) < 1e-3) / float(len(beta[i]))
+        sparsity = np.sum(np.abs(beta[i]) < sparsity_threshold) / float(len(beta[i]))
         print(np.mean(np.abs(beta[i])), sparsity)
 
 
