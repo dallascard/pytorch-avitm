@@ -93,9 +93,9 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
     bg = 0
 
     total_batch = int(n_samples_tr / batch_size)
-    l2_strength = np.ones([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]]) / float(n_samples_tr)
+    l2_strength = 0.5 * np.ones([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]]) / float(n_samples_tr)
     #l2_strength[0:4, :] = 0
-    l2_strength = np.zeros([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]])
+    #l2_strength = np.zeros([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]])
 
     # Training cycle
     for epoch in range(training_epochs):
@@ -115,14 +115,14 @@ def train(network_architecture, minibatches, type='prodlda',learning_rate=0.001,
                 # return vae,emb
                 sys.exit()
 
-            weights = emb
-            #print(weights.shape, weights.mean())
-            weights_sq = weights ** 2
-            weights_sq[weights_sq < min_weights_sq] = min_weights_sq
+        weights = emb
+        #print(weights.shape, weights.mean())
+        weights_sq = weights ** 2
+        weights_sq[weights_sq < min_weights_sq] = min_weights_sq
 
-            l2_strength = 1.0 / weights_sq / float(n_samples_tr)
-            #l2_strength = np.ones([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]])
-            #l2_strength[0:4, :] = 0
+        l2_strength = 0.5 / weights_sq / float(n_samples_tr)
+        #l2_strength = np.ones([network_architecture["n_z"], network_architecture["n_hidden_gener_1"]])
+        #l2_strength[0:4, :] = 0
 
         print(np.mean(l2_strength))
 
