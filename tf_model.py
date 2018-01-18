@@ -85,11 +85,18 @@ class VAE(object):
                             tf.multiply(tf.sqrt(tf.exp(self.posterior_logvar)), eps))         # reparameterization z
             self.posterior_var = tf.exp(self.posterior_logvar) 
 
-        p = slim.layers.softmax(self.z)
+        # DEBUG
+        #p = slim.layers.softmax(self.z)
+        p = self.z
+
+
         p_do = slim.layers.dropout(p, self.keep_prob, scope='p_dropped')               # dropout(softmax(z))
         #decoded = slim.layers.linear(p_do, n_hidden_gener_1, scope='FC_decoder', weights_regularizer=slim.l1_regularizer(0.01))
         #decoded = slim.layers.linear(p_do, n_hidden_gener_1, scope='FC_decoder')
-        decoded = tf.add(tf.matmul(p_do, self.network_weights['beta']), self.network_weights['background'])
+
+
+        #decoded = tf.add(tf.matmul(p_do, self.network_weights['beta']), self.network_weights['background'])
+        decoded = tf.add(tf.matmul(p_do, tf.exp(self.network_weights['beta'])), self.network_weights['background'])
 
         # DEBUG
         self.x_reconstr_mean = tf.nn.softmax(slim.layers.batch_norm(decoded, scope='BN_decoder'))                    # softmax(bn(50->1995))
@@ -128,13 +135,10 @@ class VAE(object):
         #regularization_penalty = tf.contrib.layers.apply_regularization(l1_regularizer, [self.network_weights['beta']])
         #self.cost = tf.reduce_mean(NL + KLD + regularization_penalty)
 
-        #regularizer = tf.nn.l2_loss(self.network_weights['beta'])
-        #self.cost = tf.add(tf.reduce_mean(NL + KLD), tf.reduce_mean(tf.reduce_sum(regularizer), 1))
-        #self.cost = tf.add(tf.reduce_mean(NL + KLD), 1.0 * regularizer)
-        #self.cost = tf.add(tf.reduce_mean(NL + KLD), tf.reduce_sum(0.5 * tf.square(self.network_weights['beta'])))
-        self.cost = tf.add(tf.reduce_mean(NL + KLD), tf.reduce_sum(tf.multiply(self.l2_strength, tf.square(self.network_weights['beta']))))
+        # SAGE-style regularization
+        #self.cost = tf.add(tf.reduce_mean(NL + KLD), tf.reduce_sum(tf.multiply(self.l2_strength, tf.square(self.network_weights['beta']))))
 
-        #self.cost = tf.reduce_mean(NL + KLD)
+        self.cost = tf.reduce_mean(NL + KLD)
 
         self.optimizer = \
             tf.train.AdamOptimizer(learning_rate=self.learning_rate,beta1=0.99).minimize(self.cost)
